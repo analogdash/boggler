@@ -35,7 +35,7 @@ def boggle (cubeset) :
         order.append(random.choice(cube).lower())
     return order
 
-def get_adjacent (cell):
+def get_adjacents (cell):
     "returns an array of indices that are adjacent to the given index on a big boggle board"
     #  0  1  2  3  4
     #  5  6  7  8  9
@@ -73,18 +73,42 @@ def get_adjacent (cell):
             finalarray.append(cell+6)
     return finalarray
 
+def process_letter (space, oldword):
+    "Recursively traverses letters"
+    letter = board[space]
+    word = oldword + [(space,letter)]
+    used = [x[0] for x in word]
+    string = "".join([x[1] for x in word])
+    #print string
+    result = twl.children(string)
+    adjacents = get_adjacents(space)
+    adjacents = [x for x in adjacents if x not in used]
+    if result == []: #invalid string
+        #print "invalid string!"
+        return None
+    elif result == ['$']: #only possible word
+        #print "only possible!"
+        newword = "".join([x[1] for x in word])
+        if len(newword) > 2:
+            if newword not in megalist:
+                megalist.append(newword)
+        return None
+    elif result[0] == '$': #is a valid word but can still be expanded
+        #print "valid but more!"
+        newword = "".join([x[1] for x in word])
+        if len(newword) > 2:
+            if newword not in megalist:
+                megalist.append(newword)
+        for adj in adjacents:
+            process_letter (adj, word)
+    else: #not a valid word but can be expanded
+        #print "keep checking!"
+        for adj in adjacents:
+            process_letter (adj, word)
+
 # HERE BEGINS THE SHIT
 
 board = boggle(cubes)
-
-#for space in board:
-space = 0
-
-adjs = get_adjacent(space)
-
-#for adj in adjs:
-adj = 0
-
-permitted = twl.children(board[space]+board[adj])
-
-
+megalist = []
+for n in range(0,24):
+    process_letter (n, [])
