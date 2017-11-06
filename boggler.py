@@ -1,4 +1,5 @@
 import random
+import itertools
 import twl
 
 cubes = [["T", "T", "T", "E", "M", "I"],
@@ -107,8 +108,17 @@ def process_letter (space, oldword):
             process_letter (adj, word)
 
 # HERE BEGINS THE SHIT
+t1 = time.time()
+for _ in itertools.repeat(None, 99900):
+    board = boggle(cubes)
+    megalist = []
+    for n in range(0,24):
+        process_letter (n, [])
+    boardstring = "".join(board)
+    foundwords = ",".join(megalist)
+    print(boardstring)
+    with open("test.txt", "a") as myfile:
+        myfile.write(boardstring+","+foundwords+"\n")
 
-board = boggle(cubes)
-megalist = []
-for n in range(0,24):
-    process_letter (n, [])
+t2 = time.time()
+t2-t1
